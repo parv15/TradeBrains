@@ -15,7 +15,8 @@ export default async function Page() {
     movers = [];
   }
 
-  const list = movers;
+  const gainers = movers?.gainers || [];
+  const losers = movers?.losers || [];
 
   return (
     <div>
@@ -35,7 +36,7 @@ export default async function Page() {
           Top Gainers
         </div>
         <div className="stock-grid">
-          {(list?.gainers || []).map((item) => (
+          {gainers.map((item) => (
             <Link
               key={item.symbol}
               href={`/stock/${item.symbol}`}
@@ -77,7 +78,7 @@ export default async function Page() {
           Top Losers
         </div>
         <div className="stock-grid">
-          {(list?.losers || []).map((item) => (
+          {losers.map((item) => (
             <Link
               key={item.symbol}
               href={`/stock/${item.symbol}`}
