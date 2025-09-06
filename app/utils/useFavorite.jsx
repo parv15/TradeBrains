@@ -6,7 +6,6 @@ export function useFavorites(key = 'favorites') {
 
   useEffect(() => {
     const stored = localStorage.getItem(key)
-    console.log('Stored favorites:', stored)
     if (stored) setFavorites(JSON.parse(stored))
   }, [key])
 

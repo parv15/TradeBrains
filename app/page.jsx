@@ -16,8 +16,7 @@ export default async function Page() {
   }
 
   const list = movers;
-
-  console.log("MOVERS", movers);
+  
   return (
     <div>
       <div
