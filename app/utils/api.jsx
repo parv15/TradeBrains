@@ -1,4 +1,4 @@
-export const API_HOST = process.env.NEXT_PUBLIC_API_HOST || 'https://portal.tradebrains.in'
+export const API_HOST = 'https://portal.tradebrains.in'
 
 export async function getTickerData(){
   const res = await fetch(`${API_HOST}/api/assignment/index/NIFTY/movers/`, {cache:'no-store'})

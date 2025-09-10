@@ -1,25 +1,53 @@
-import { getStockPrices } from '../../utils/api'
+import { getStockPrices, searchStocks } from '../../utils/api'
 import '../../global.css'
 import StockWrapper from '../../components/stockCharts'
 import FavoriteButton from '../../components/favoriteBtn';
 
-export async function generateMetadata({ params }) {
-    const symbol = await decodeURIComponent(params?.symbol) 
+
+async function getStockData(symbol) {
+  const [raw, company] = await Promise.all([
+    getStockPrices(symbol, 1, 'INTRADAY', 500),
+    searchStocks(symbol, 1),
+  ])
+
   return {
-    title: `${symbol} — Stock Details`,
-    description: `Price and overview for ${symbol}`,
+    prices: raw.reverse(),
+    company,
   }
 }
 
-export default async function stockPrice({params}) {
-  const { symbol } = params
-  let prices = []
-  try{
-    const raw = await getStockPrices(symbol, 1, 'INTRADAY', 500)
-    prices = raw.reverse()
-  }catch(e){
-    prices = []
+
+export async function generateMetadata({ params }) {
+    const param = await params
+    const symbol = decodeURIComponent(param?.symbol) 
+   try{
+     const { company } = await getStockData(symbol)
+     return {
+    title: `${symbol} — Stock Details`,
+    description: `Price and overview for ${symbol}-${company[0]?.company}`,
   }
+   }
+   catch{
+      return {
+    title: `${symbol} — Stock Details`,
+    description: `Price and overview for ${symbol}`,
+  }
+   }
+}
+
+export default async function stockPrice({params}) {
+  const { symbol } = await params
+ 
+  let prices = []
+  let companyDetails = []
+  try {
+    const data = await getStockData(symbol)
+    prices = data.prices
+    companyDetails = data.company
+  } catch (e) {
+    console.error(e)
+  }
+
   const latest = prices.length ? prices[prices.length-1] : null
   const latestPrice = latest?.close || '—'
   const change = latest ? (latest?.close - (prices[prices?.length-2]?.close )) : 0
@@ -32,6 +60,8 @@ export default async function stockPrice({params}) {
         <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
           <div>
             <div style={{fontSize:28,fontWeight:800}}>{decodeURIComponent(symbol)}</div>
+            <div style={{fontSize:16,fontWeight:500,color:'var(--muted)'}}>{companyDetails[0].company}</div>
+
           </div>
           <div style={{textAlign:'right'}}>
             <FavoriteButton symbol={decodeURIComponent(symbol)} />

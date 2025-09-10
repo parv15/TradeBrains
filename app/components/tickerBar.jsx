@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
 import Marquee from "react-fast-marquee";
-import { getTickerData } from "../utils/api"; // make sure this exists
+import { getTickerData } from "../utils/api";
 import { TbTriangleFilled, TbTriangleInvertedFilled } from "react-icons/tb";
+import Link from "next/link";
 
 export default function TickerBar() {
   const [movers, setMovers] = useState([]);
@@ -20,6 +21,7 @@ export default function TickerBar() {
     }
     fetchTicker();
   }, []); 
+  
 
   return (
     <div style={{ background: "#111", color: "white", padding: "6px 0" }}>
@@ -29,14 +31,18 @@ export default function TickerBar() {
           const isUp = change >= 0;
           return (
             <div
-              key={i}
+       
               style={{
                 display: "flex",
                 alignItems: "center",
                 marginRight: 40,
                 fontSize: 14,
               }}
+
             >
+            <Link key={i} href={`/stock/${encodeURIComponent(t.symbol)}` }>
+
+            <span >
               <span style={{ fontWeight: 700, marginRight: 8 }}>
                 {t.symbol}
               </span>
@@ -53,6 +59,9 @@ export default function TickerBar() {
                   {isUp ? `+${change.toFixed(2)}` : `${change.toFixed(2)}`}%
                 </span>
               </span>
+              </span>
+            </Link>
+
             </div>
           );
         })}
